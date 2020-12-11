@@ -62,4 +62,4 @@ def new_comment():
         values = (None, post, request.form['message'])
         Comment(*values).create()
 
-        return redirect(url_for('show_post', id=post.id))
+        return redirect(url_for('show_post', post_id=post.post_id))

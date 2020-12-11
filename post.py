@@ -18,7 +18,7 @@ class Post:
     @staticmethod
     def find(post_id):
         with DB() as db:
-            row = db.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+            row = db.execute('SELECT * FROM posts WHERE post_id = ?', (post_id,)).fetchone()
             if row is None:
                 return
             return Post(*row)
@@ -32,12 +32,12 @@ class Post:
     def save(self):
         with DB() as db:
             values = (self.name, self.author, self.content, self.post_id)
-            db.execute('UPDATE posts SET name = ?, author = ?, content = ? WHERE id = ?', values)
+            db.execute('UPDATE posts SET name = ?, author = ?, content = ? WHERE post_id = ?', values)
             return self
 
     def delete(self):
         with DB() as db:
-            db.execute('DELETE FROM posts WHERE id = ?', (self.post_id,))
+            db.execute('DELETE FROM posts WHERE post_id = ?', (self.post_id,))
 
     def comments(self):
         return Comment.find_by_post(self)
