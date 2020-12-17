@@ -8,6 +8,6 @@ Prerequisites
 )
 
 
- How to run :  Execute in command prompt: 
+ How to run :  Execute in command(git bash) prompt: 
  1. export FLASK_APP=<flask-app>.py
  2. flask run
