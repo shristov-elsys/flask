@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template, request, redirect, url_for, jsonify
 import json
+import logging
 
 from functools import wraps
 
@@ -9,6 +10,9 @@ from comment import Comment
 from user import User
 
 app = Flask(__name__)
+
+
+logging.basicConfig(filename='demo.log', level=logging.DEBUG)
 
 
 def require_login(func):
@@ -49,6 +53,7 @@ def edit_post(post_id):
         post.content = request.form['content']
         post.save()
 
+        app.logger.debug('Post with id %s edited', post.post_id)
         return redirect(url_for('show_post', post_id=post.post_id))
 
 
@@ -56,7 +61,7 @@ def edit_post(post_id):
 def delete_post(post_id):
     post = Post.find(post_id)
     post.delete()
-
+    app.logger.debug('Post with id %sis deleted', post_id)
     return redirect(url_for('list_posts'))
 
 
@@ -67,7 +72,9 @@ def new_post():
         return render_template('new_post.html')
     elif request.method == 'POST':
         values = (None, request.form['name'], request.form['author'], request.form['content'])
-        Post(*values).create()
+        created_post = Post(*values).create()
+
+        app.logger.debug('Post with id %sis created', created_post.post_id)
         return redirect(url_for('list_posts'))
 
 
@@ -106,7 +113,10 @@ def login():
         password = data['password']
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
+            app.logger.warn('%s is NOT logged!', username)
             return jsonify({'token': None})
+
+        app.logger.info('%s logged in successfully', username)
         token = user.generate_token()
         return jsonify({'token': token.decode('ascii')})
 
