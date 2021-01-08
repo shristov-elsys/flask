@@ -11,9 +11,19 @@ from user import User
 
 app = Flask(__name__)
 
-
-logging.basicConfig(filename='demo.log', level=logging.DEBUG)
-
+#logging.basicConfig(filename='demo.log', level=logging.DEBUG)
+logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
+logging.basicConfig(format=logFormatStr, filename="global.log", level=logging.DEBUG)
+formatter = logging.Formatter(logFormatStr, '%m-%d %H:%M:%S')
+fileHandler = logging.FileHandler("flask-app.log")
+fileHandler.setLevel(logging.DEBUG)
+fileHandler.setFormatter(formatter)
+streamHandler = logging.StreamHandler()
+streamHandler.setLevel(logging.DEBUG)
+streamHandler.setFormatter(formatter)
+app.logger.addHandler(fileHandler)
+app.logger.addHandler(streamHandler)
+app.logger.info("Logging is set up.")
 
 def require_login(func):
     @wraps(func)
@@ -61,7 +71,7 @@ def edit_post(post_id):
 def delete_post(post_id):
     post = Post.find(post_id)
     post.delete()
-    app.logger.debug('Post with id %sis deleted', post_id)
+    app.logger.debug('Post with id %s is deleted', post_id)
     return redirect(url_for('list_posts'))
 
 
@@ -74,7 +84,7 @@ def new_post():
         values = (None, request.form['name'], request.form['author'], request.form['content'])
         created_post = Post(*values).create()
 
-        app.logger.debug('Post with id %sis created', created_post.post_id)
+        app.logger.debug('Post with id %s is  created', created_post.post_id)
         return redirect(url_for('list_posts'))
 
 
