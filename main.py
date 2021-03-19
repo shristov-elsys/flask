@@ -6,6 +6,7 @@ import logging
 from functools import wraps
 
 from post import Post
+from post import PostEncoder
 from comment import Comment
 from user import User
 
@@ -42,6 +43,21 @@ def home():
 @app.route('/posts')
 def list_posts():
     return render_template('posts.html', posts=Post.all())
+
+
+@app.route('/experiment')
+def home_experiment():
+    return render_template('experiment/js-test.html')
+
+
+@app.route('/experiment/posts')
+def rest_list_posts():
+    response = app.response_class(
+        response=json.dumps(Post.all(), indent=4, cls=PostEncoder),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 
 @app.route('/posts/<int:post_id>')

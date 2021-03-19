@@ -1,5 +1,6 @@
 from database import DB
 from comment import Comment
+from json import JSONEncoder
 
 
 class Post:
@@ -41,3 +42,9 @@ class Post:
 
     def comments(self):
         return Comment.find_by_post(self)
+
+
+# subclass JSONEncoder
+class PostEncoder(JSONEncoder):
+    def default(self, o):
+        return o.__dict__
